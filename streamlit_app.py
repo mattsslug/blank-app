@@ -20,7 +20,7 @@ if uploaded_file:
         df = pd.read_excel(uploaded_file)
 
         # Required columns
-        score_column = "QA Score "
+        score_column = "QA Score"
         date_column = "Quality Assurance End Date"
         engine_model_column = "Engine Model"
 
