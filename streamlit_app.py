@@ -20,12 +20,13 @@ if uploaded_file:
         df = pd.read_excel(uploaded_file)
 
         # Required columns
-        score_column = "QA Score"
+        score_column = "QA Score "
         date_column = "Quality Assurance End Date"
+        engine_model_column = "Engine Model"
 
         # Validate columns
         missing_columns = [
-            col for col in [score_column, date_column]
+            col for col in [score_column, date_column, engine_model_column]
             if col not in df.columns
         ]
 
@@ -38,10 +39,33 @@ if uploaded_file:
 
             filtered_df = df.dropna(subset=[score_column, date_column])
 
+            # Sidebar slicer for Engine Model
+            st.sidebar.header("Filters")
+
+            engine_models = sorted(
+                filtered_df[engine_model_column]
+                .dropna()
+                .astype(str)
+                .unique()
+            )
+
+            selected_models = st.sidebar.multiselect(
+                "Select Engine Model",
+                options=engine_models,
+                default=engine_models
+            )
+
+            # Apply filter
+            filtered_df = filtered_df[
+                filtered_df[engine_model_column]
+                .astype(str)
+                .isin(selected_models)
+            ]
+
             # Create date-only column
             filtered_df["QA Date"] = filtered_df[date_column].dt.date
 
-            st.subheader("Raw Data")
+            st.subheader("Filtered Raw Data")
             st.dataframe(filtered_df, use_container_width=True)
 
             # KPI Metrics
